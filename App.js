@@ -3,6 +3,11 @@ import { NavigationContainer, createNavigationContainerRef } from "@react-naviga
 import { StyleSheet, Text, View } from 'react-native';
 import AppNavigator from "./app/navigation/AppNavigator";
 import { useState } from "react";
+import dayjs from "dayjs";
+var localizedFormat = require('dayjs/plugin/localizedFormat')
+dayjs.extend(localizedFormat)
+
+
 
 export default function App() {
 
