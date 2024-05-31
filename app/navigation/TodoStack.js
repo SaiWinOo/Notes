@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text } from "react-native";
 
-const TodoNavigator = () => {
+const TodoStack = () => {
   return (
     <View>
       <Text>Todo Navigator </Text>
@@ -9,4 +9,4 @@ const TodoNavigator = () => {
   )
 }
 
-export default TodoNavigator;
+export default TodoStack;

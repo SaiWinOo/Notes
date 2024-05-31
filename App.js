@@ -1,12 +1,25 @@
-import { NavigationContainer } from "@react-navigation/native";
-import { StatusBar } from 'expo-status-bar';
+import 'react-native-gesture-handler';
+import { NavigationContainer, createNavigationContainerRef } from "@react-navigation/native";
 import { StyleSheet, Text, View } from 'react-native';
-import TabNavigator from "./app/navigation/TabNavigator";
+import AppNavigator from "./app/navigation/AppNavigator";
+import { useState } from "react";
 
 export default function App() {
+
+  const ref = createNavigationContainerRef();
+  const [routeName, setRouteName] = useState('');
+
+
   return (
-    <NavigationContainer>
-      <TabNavigator />
+    <NavigationContainer
+      ref={ref}
+      onReady={() => setRouteName(ref.getCurrentRoute().name)
+      }
+      onStateChange={async () => {
+        setRouteName(ref.getCurrentRoute().name);
+      }}
+    >
+      <AppNavigator routeName={routeName} />
     </NavigationContainer>
   );
 }
