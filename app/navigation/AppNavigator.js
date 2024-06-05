@@ -3,18 +3,21 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const Tab = createBottomTabNavigator();
 
-import React, { useEffect, useRef } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import NoteStack from "./NoteStack";
 import TodoStack from "./TodoStack";
 import colors from "../config/colors";
+import { AppContext } from "../provider/AppProvider";
 
 
 const hideBottomTabScreens = ['NoteFormScreen'];
 
 const AppNavigator = ({ routeName }) => {
 
+  const { showBottomTabBar, setShowBottomTabBar } = useContext(AppContext);
 
-  const hide = hideBottomTabScreens.includes(routeName);
+  // const hide = hideBottomTabScreens.includes(routeName);
+
 
   return (
     <Tab.Navigator
@@ -27,7 +30,7 @@ const AppNavigator = ({ routeName }) => {
     >
       <Tab.Screen name="Notes" options={{
         tabBarStyle: {
-          display: hide ? 'none' : 'flex'
+          display: showBottomTabBar ? 'none' : 'flex'
         },
         tabBarIcon: ({ focused, color, size }) => <MaterialIcons name="sticky-note-2" size={size} color={color} />
       }} component={NoteStack} />

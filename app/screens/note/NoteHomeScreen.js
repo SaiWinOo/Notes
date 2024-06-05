@@ -1,41 +1,142 @@
-import React, { useState } from 'react'
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ScrollView, TouchableWithoutFeedback } from "react-native";
+import React, { useCallback, useEffect, useState } from 'react'
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ScrollView, TouchableWithoutFeedback, Alert } from "react-native";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import colors from "../../config/colors";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import LottieView from 'lottie-react-native';
-
+import useDB from "../../../db/useDB";
+import dayjs from "dayjs";
+import { useFocusEffect } from "@react-navigation/native";
+import { Feather } from '@expo/vector-icons';
+import { EvilIcons } from '@expo/vector-icons';
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 const NoteHomeScreen = ({ navigation }) => {
 
+  const { fetchNotes } = useDB();
+  const bottomBarHeight = useBottomTabBarHeight();
   const [selectedNotes, setSelectedNotes] = useState([]);
   const [isSelecting, setIsSelecting] = useState(false);
+  const [notes, setNotes] = useState([]);
+  const [isSelectedAll, setIsSelectedAll] = useState(false);
 
 
-  const handleLongPress = (index) => {
-    if (isSelecting) return;
-    setIsSelecting(true);
-    setSelectedNotes(pre => [...pre, index]);
+
+  const getAllNotes = async () => {
+    try {
+      let res = await fetchNotes();
+      setNotes(res);
+    } catch (error) {
+      console.log('error', error);
+      alert(error);
+    }
   }
 
-  const handlePress = (index) => {
-    if (!isSelecting) return;
-    if (selectedNotes.includes(index)) {
+  useEffect(() => {
+    if (notes.length && notes.length === selectedNotes.length) {
+      setIsSelectedAll(true);
+    }
+  }, [selectedNotes]);
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+      const fetchData = async () => {
+        if (isActive) {
+          await getAllNotes();
+        }
+      }
+      fetchData();
+      return () => {
+        isActive = false;
+      }
+    }, [])
+  );
+
+
+  useEffect(() => {
+    console.log('working');
+    navigation.setOptions({
+
+    });
+  }, [isSelecting]);
+
+  const handleLongPress = (note) => {
+    if (isSelecting) return;
+    setIsSelecting(true);
+    setSelectedNotes(pre => [...pre, note.id]);
+  }
+
+  const handlePress = (note) => {
+    if (!isSelecting) {
+      navigation.navigate('NoteFormScreen', { ...note, content: note.content?.startsWith('"') ? JSON.parse(note.content) : note.content });
+      return;
+    };
+    if (selectedNotes.includes(note.id)) {
       setSelectedNotes(pre => {
-        let selectedItems = pre.filter(item => item !== index);
+        let selectedItems = pre.filter(item => item !== note.id);
         selectedItems.length === 0 && setIsSelecting(false);
         return selectedItems;
       });
+      setIsSelectedAll(false);
     } else {
-      setSelectedNotes(pre => [...pre, index]);
+      setSelectedNotes(pre => [...pre, note.id]);
     }
-
   }
 
+
+  const handleCancelSelect = () => {
+    setIsSelecting(false);
+    setSelectedNotes([]);
+    setIsSelectedAll(false);
+  }
+
+  const handleSelectAll = () => {
+    let noteIds = [];
+    notes.forEach(note => {
+      noteIds.push(note.id);
+    });
+    setSelectedNotes(noteIds);
+    setIsSelecting(true);
+  }
 
 
   return (
     <SafeAreaView style={styles.container}>
+      <>
+        <View style={{ opacity: isSelecting ? 1 : 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10, }}>
+          <TouchableOpacity style={{ padding: 5 }} onPress={handleCancelSelect}>
+            <Feather name="x" size={30} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity style={{ padding: 5 }} onPress={handleSelectAll}>
+            {
+              isSelectedAll ?
+                <AntDesign name="checksquare" size={30} color={colors.primary} />
+                :
+                <AntDesign name="checksquareo" size={30} color={colors.black} />
+
+            }
+          </TouchableOpacity>
+        </View>
+        <View>
+          <Text style={{ fontSize: 20, padding: 10, fontWeight: '600', opacity: isSelecting ? 1 : 0 }}>{selectedNotes.length} item selected.</Text>
+        </View>
+      </>
+
+      <View style={{
+        position: 'absolute',
+        bottom: -40,
+        backgroundColor: 'red',
+        width: '100%',
+        height: bottomBarHeight,
+        left: 0,
+        zIndex: 10000000000
+      }}>
+        <TouchableOpacity>
+          <EvilIcons name="trash" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
+
       <TouchableOpacity onPress={() => navigation.navigate('NoteFormScreen')} style={styles.plusButton}>
         <AntDesign name="plus" size={28} color="white" />
       </TouchableOpacity>
@@ -43,34 +144,41 @@ const NoteHomeScreen = ({ navigation }) => {
         <ScrollView showsVerticalScrollIndicator={false}>
           <Text style={styles.title}>Note</Text>
           {
-            [...new Array(10)].map((item, index) => (
+            notes.map((item) => (
               <TouchableWithoutFeedback
-                onPress={() => handlePress(index)}
-                key={index} onLongPress={() => handleLongPress(index)}
+                onPress={() => handlePress(item)}
+                key={item.id} onLongPress={() => handleLongPress(item)}
               >
                 <View style={styles.noteContainer}>
                   {
-                    !selectedNotes.includes(index) ?
-                      <View style={styles.checked}></View> : null
+                    isSelecting ?
+                      <>
+                        {
+                          !selectedNotes.includes(item.id) ?
+                            <View style={styles.checked}></View> : null
+                        }
+                        {
+                          selectedNotes.includes(item.id) ?
+                            <LottieView
+                              autoPlay
+                              loop={false}
+                              style={{
+                                width: 31,
+                                height: 31,
+                                position: 'absolute',
+                                right: 20,
+                                top: 38,
+                              }}
+                              source={require('../../../assets/lottie/right.json')}
+                            /> : null
+                        }
+                      </> : null
                   }
-                  {
-                    selectedNotes.includes(index) ?
-                      <LottieView
-                        autoPlay
-                        loop={false}
-                        style={{
-                          width: 31,
-                          height: 31,
-                          position: 'absolute',
-                          right: 20,
-                          top: 38,
-                        }}
-                        source={require('../../../assets/lottie/right.json')}
-                      /> : null
-                  }
-                  <Text style={styles.noteTitle}>Relationship</Text>
-                  <Text style={styles.noteDescription}>I miss you so much baby</Text>
-                  <Text style={styles.noteDate}>May 19</Text>
+                  <Text style={styles.noteTitle}>{item.title}</Text>
+                  <Text style={styles.noteDescription}>
+                    {item.content?.startsWith('"') ? JSON.parse(item.content) : item.content}
+                  </Text>
+                  <Text style={styles.noteDate}>{dayjs(item.modification_date).format('MMM DD')}</Text>
                 </View>
               </TouchableWithoutFeedback>
             ))
