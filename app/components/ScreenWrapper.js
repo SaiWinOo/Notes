@@ -4,7 +4,7 @@ import colors from "../config/colors";
 
 const ScreenWrapper = ({ children, style = {} }) => {
   return (
-    <View style={{ padding: 10, backgroundColor: colors.white, flex: 1, ...style }}>
+    <View style={{ padding: 10, backgroundColor: colors.black, flex: 1, ...style }}>
       <>
         {children}
       </>

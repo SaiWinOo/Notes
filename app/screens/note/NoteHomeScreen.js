@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ScrollView, TouchableWithoutFeedback, Alert } from "react-native";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import colors from "../../config/colors";
@@ -8,18 +8,17 @@ import useDB from "../../../db/useDB";
 import dayjs from "dayjs";
 import { useFocusEffect } from "@react-navigation/native";
 import { Feather } from '@expo/vector-icons';
-import { EvilIcons } from '@expo/vector-icons';
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { Ionicons } from '@expo/vector-icons';
+import constants from 'expo-constants';
+
 
 const NoteHomeScreen = ({ navigation }) => {
 
-  const { fetchNotes } = useDB();
-  const bottomBarHeight = useBottomTabBarHeight();
+  const { fetchNotes, deleteByIds } = useDB();
   const [selectedNotes, setSelectedNotes] = useState([]);
   const [isSelecting, setIsSelecting] = useState(false);
   const [notes, setNotes] = useState([]);
   const [isSelectedAll, setIsSelectedAll] = useState(false);
-
 
 
   const getAllNotes = async () => {
@@ -53,13 +52,6 @@ const NoteHomeScreen = ({ navigation }) => {
     }, [])
   );
 
-
-  useEffect(() => {
-    console.log('working');
-    navigation.setOptions({
-
-    });
-  }, [isSelecting]);
 
   const handleLongPress = (note) => {
     if (isSelecting) return;
@@ -101,48 +93,54 @@ const NoteHomeScreen = ({ navigation }) => {
   }
 
 
+  const handleDelete = async () => {
+    try {
+      deleteByIds(selectedNotes);
+      setIsSelecting(false);
+      setSelectedNotes([]);
+      getAllNotes();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   return (
     <SafeAreaView style={styles.container}>
       <>
         <View style={{ opacity: isSelecting ? 1 : 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10, }}>
           <TouchableOpacity style={{ padding: 5 }} onPress={handleCancelSelect}>
-            <Feather name="x" size={30} color="black" />
+            <Feather name="x" size={30} color={colors.white} />
           </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 5 }} onPress={handleSelectAll}>
-            {
-              isSelectedAll ?
-                <AntDesign name="checksquare" size={30} color={colors.primary} />
-                :
-                <AntDesign name="checksquareo" size={30} color={colors.black} />
+          <View style={{ flexDirection: 'row', gap: 5 }}>
+            <TouchableOpacity style={{ padding: 5 }} onPress={handleDelete}>
+              <Ionicons name="trash-outline" size={30} color={colors.danger} />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ padding: 5 }} onPress={handleSelectAll}>
+              {
+                isSelectedAll ?
+                  <AntDesign name="checksquare" size={30} color={colors.primary} />
+                  :
+                  <AntDesign name="checksquareo" size={30} color={colors.white} />
 
-            }
-          </TouchableOpacity>
-        </View>
-        <View>
-          <Text style={{ fontSize: 20, padding: 10, fontWeight: '600', opacity: isSelecting ? 1 : 0 }}>{selectedNotes.length} item selected.</Text>
+              }
+            </TouchableOpacity>
+          </View>
         </View>
       </>
-
-      <View style={{
-        position: 'absolute',
-        bottom: -40,
-        backgroundColor: 'red',
-        width: '100%',
-        height: bottomBarHeight,
-        left: 0,
-        zIndex: 10000000000
-      }}>
-        <TouchableOpacity>
-          <EvilIcons name="trash" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
 
       <TouchableOpacity onPress={() => navigation.navigate('NoteFormScreen')} style={styles.plusButton}>
         <AntDesign name="plus" size={28} color="white" />
       </TouchableOpacity>
       <ScreenWrapper>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Text style={styles.title}>Note</Text>
+
+          {
+            isSelecting ?
+              <Text style={{ fontSize: 20, color: colors.white, padding: 10, fontWeight: '600', opacity: isSelecting ? 1 : 0 }}>{selectedNotes.length} item selected.</Text>
+              :
+              <Text style={styles.title}>Note</Text>
+          }
           {
             notes.map((item) => (
               <TouchableWithoutFeedback
@@ -193,25 +191,27 @@ const NoteHomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.black,
+    paddingTop: constants.statusBarHeight,
   },
   title: {
     fontSize: 25,
     fontWeight: '700',
     marginBottom: 15,
+    color: colors.white,
   },
   checked: {
-    backgroundColor: '#00000020',
+    backgroundColor: '#ffffff50',
     borderRadius: 12,
-    width: 24,
-    height: 24,
+    width: 23,
+    height: 23,
     position: 'absolute',
-    right: 20,
-    top: 40,
+    right: 24,
+    top: 42,
   },
   noteContainer: {
     display: 'block',
-    backgroundColor: '#00000020',
+    backgroundColor: '#ffffff30',
     width: '100%',
     height: 100,
     borderRadius: 10,
@@ -222,15 +222,17 @@ const styles = StyleSheet.create({
   noteTitle: {
     fontSize: 18,
     fontWeight: '600',
+    color: colors.white
   },
   noteDescription: {
     fontSize: 15,
-    fontWeight: '300',
-    color: "#00000090"
+    fontWeight: '400',
+    color: '#ffffff99'
   },
   noteDate: {
     fontSize: 13,
     fontWeight: '200',
+    color: '#ffffff99'
   },
   plusButton: {
     position: 'absolute',

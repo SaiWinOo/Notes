@@ -35,6 +35,11 @@ const useDB = () => {
     )
   }
 
+  const deleteByIds = (ids) => {
+    ids.forEach(id => {
+      db.execSync(`DELETE FROM notes WHERE id = ${id}`)
+    });
+  }
 
   return {
     createNoteTable,
@@ -42,6 +47,7 @@ const useDB = () => {
     storeNote,
     fetchNotes,
     updateNote,
+    deleteByIds,
   }
 }
 
