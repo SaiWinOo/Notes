@@ -23,14 +23,14 @@ const Editor = ({ onChange, placeholder, value }) => {
         initialContentHTML={value}
         onHeightChange={e => console.log(e)}
         placeholder={placeholder}
-        editorStyle={{ backgroundColor: 'white', color: 'black' }}
+        editorStyle={{ backgroundColor: 'black', color: 'white' }}
       />
       {/* </ScrollView> */}
 
       <RichToolbar
         editor={richText}
         style={[styles.richBar]}
-        iconTint={colors.black}
+        iconTint={colors.white}
         selectedIconTint={colors.primary}
         disabledIconTint={colors.grayText}
         actions={[
@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
   richBar: {
     height: 55,
     paddingBottom: 14,
+    backgroundColor: colors.black,
   },
 });
 

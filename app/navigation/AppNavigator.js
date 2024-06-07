@@ -7,6 +7,7 @@ import React, { useContext, useEffect, useRef } from 'react'
 import NoteStack from "./NoteStack";
 import TodoStack from "./TodoStack";
 import colors from "../config/colors";
+import TodoScreen from "../screens/todo/TodoScreen";
 
 const hideBottomTabScreens = ['NoteFormScreen'];
 
@@ -25,6 +26,7 @@ const AppNavigator = ({ routeName }) => {
       }}
 
     >
+
       <Tab.Screen name="Notes"
         options={{
           tabBarStyle: {
@@ -32,7 +34,8 @@ const AppNavigator = ({ routeName }) => {
           },
           tabBarIcon: ({ focused, color, size }) => <MaterialIcons name="sticky-note-2" size={size} color={color} />
         }} component={NoteStack} />
-      <Tab.Screen name='Todo' component={TodoStack} />
+
+      <Tab.Screen name='Todo' component={TodoScreen} />
     </Tab.Navigator>
   )
 }

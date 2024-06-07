@@ -1,4 +1,5 @@
 import 'react-native-gesture-handler';
+import 'react-native-reanimated';
 import { NavigationContainer, createNavigationContainerRef } from "@react-navigation/native";
 import { StyleSheet, Text, View } from 'react-native';
 import AppNavigator from "./app/navigation/AppNavigator";
@@ -12,9 +13,6 @@ import * as SQLite from 'expo-sqlite';
 import AppProvider from "./app/provider/AppProvider";
 var localizedFormat = require('dayjs/plugin/localizedFormat')
 dayjs.extend(localizedFormat)
-
-
-
 
 
 export default function App() {

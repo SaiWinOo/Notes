@@ -54,7 +54,7 @@ const NoteFormScreen = ({ navigation, route }) => {
 
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, backgroundColor: colors.black, }}
       keyboardVerticalOffset={80}
     >
       <SafeAreaView style={{ flex: 1, paddingTop: constants.statusBarHeight }}>
@@ -62,17 +62,17 @@ const NoteFormScreen = ({ navigation, route }) => {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <MaterialIcons style={{
               width: 35, height: 35
-            }} name="keyboard-backspace" size={30} color="black" />
+            }} name="keyboard-backspace" size={30} color={colors.white} />
           </TouchableOpacity>
           <TouchableOpacity style={{
             width: 35, height: 35
           }} onPress={handleSubmit(save)}>
-            <Ionicons name="checkmark-sharp" size={30} color="black" />
+            <Ionicons name="checkmark-sharp" size={30} color={colors.white} />
           </TouchableOpacity>
         </View>
         <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
-          <ScreenWrapper style={{ flexDirection: 'column', justifyContent: 'space-evenly', padding: 5, backgroundColor: colors.white }}>
-            <View style={{ padding: 5 }}>
+          <ScreenWrapper style={{ flexDirection: 'column', justifyContent: 'space-evenly', padding: 5, backgroundColor: colors.black }}>
+            <View style={{ padding: 5, }}>
               <Controller
                 control={control}
                 name="title"
@@ -80,14 +80,14 @@ const NoteFormScreen = ({ navigation, route }) => {
                   <TextInput
                     onChangeText={onChange}
                     value={value}
-                    style={{ fontSize: 24, marginVertical: 15, color: colors.black, fontWeight: '700' }}
+                    style={{ fontSize: 24, marginVertical: 15, color: colors.white, fontWeight: '700', }}
                     placeholder="Title"
-                    placeholderTextColor={colors.grayText}
+                    placeholderTextColor={'#ffffff50'}
                   />
                 )}
               />
 
-              <Text style={{ color: colors.grayText, marginBottom: 10 }}>{dayjs().format('L LT')}</Text>
+              <Text style={{ color: '#ffffff90', marginBottom: 10 }}>{dayjs().format('L LT')}</Text>
             </View>
             <Controller
               control={control}

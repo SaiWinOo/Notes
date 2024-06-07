@@ -1,15 +1,14 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ScrollView, TouchableWithoutFeedback, Alert } from "react-native";
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ScrollView, TouchableWithoutFeedback, Alert, Animated } from "react-native";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import colors from "../../config/colors";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import LottieView from 'lottie-react-native';
 import useDB from "../../../db/useDB";
-import dayjs from "dayjs";
 import { useFocusEffect } from "@react-navigation/native";
 import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import constants from 'expo-constants';
+import NoteCard from "../../components/NoteCard";
 
 
 const NoteHomeScreen = ({ navigation }) => {
@@ -60,6 +59,7 @@ const NoteHomeScreen = ({ navigation }) => {
   }
 
   const handlePress = (note) => {
+
     if (!isSelecting) {
       navigation.navigate('NoteFormScreen', { ...note, content: note.content?.startsWith('"') ? JSON.parse(note.content) : note.content });
       return;
@@ -84,12 +84,18 @@ const NoteHomeScreen = ({ navigation }) => {
   }
 
   const handleSelectAll = () => {
-    let noteIds = [];
-    notes.forEach(note => {
-      noteIds.push(note.id);
-    });
-    setSelectedNotes(noteIds);
-    setIsSelecting(true);
+    if (isSelectedAll) {
+      setSelectedNotes([]);
+      setIsSelecting(true);
+      setIsSelectedAll(false);
+    } else {
+      let noteIds = [];
+      notes.forEach(note => {
+        noteIds.push(note.id);
+      });
+      setSelectedNotes(noteIds);
+      setIsSelecting(true);
+    }
   }
 
 
@@ -103,6 +109,7 @@ const NoteHomeScreen = ({ navigation }) => {
       console.log(error);
     }
   }
+
 
 
   return (
@@ -134,53 +141,28 @@ const NoteHomeScreen = ({ navigation }) => {
       </TouchableOpacity>
       <ScreenWrapper>
         <ScrollView showsVerticalScrollIndicator={false}>
-
           {
             isSelecting ?
               <Text style={{ fontSize: 20, color: colors.white, padding: 10, fontWeight: '600', opacity: isSelecting ? 1 : 0 }}>{selectedNotes.length} item selected.</Text>
               :
               <Text style={styles.title}>Note</Text>
           }
+
           {
-            notes.map((item) => (
-              <TouchableWithoutFeedback
-                onPress={() => handlePress(item)}
-                key={item.id} onLongPress={() => handleLongPress(item)}
-              >
-                <View style={styles.noteContainer}>
-                  {
-                    isSelecting ?
-                      <>
-                        {
-                          !selectedNotes.includes(item.id) ?
-                            <View style={styles.checked}></View> : null
-                        }
-                        {
-                          selectedNotes.includes(item.id) ?
-                            <LottieView
-                              autoPlay
-                              loop={false}
-                              style={{
-                                width: 31,
-                                height: 31,
-                                position: 'absolute',
-                                right: 20,
-                                top: 38,
-                              }}
-                              source={require('../../../assets/lottie/right.json')}
-                            /> : null
-                        }
-                      </> : null
-                  }
-                  <Text style={styles.noteTitle}>{item.title}</Text>
-                  <Text style={styles.noteDescription}>
-                    {item.content?.startsWith('"') ? JSON.parse(item.content) : item.content}
-                  </Text>
-                  <Text style={styles.noteDate}>{dayjs(item.modification_date).format('MMM DD')}</Text>
-                </View>
-              </TouchableWithoutFeedback>
-            ))
+            notes.length == 0 ?
+              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ color: colors.gray, marginTop: 100, fontSize: 20 }}>No notes</Text>
+              </View> :
+              <>
+                {
+                  notes.map((item) => (
+                    <NoteCard key={item.id} selectedNotes={selectedNotes} handleLongPress={handleLongPress}
+                      handlePress={handlePress} isSelecting={isSelecting} item={item} />
+                  ))
+                }
+              </>
           }
+
         </ScrollView>
       </ScreenWrapper>
     </SafeAreaView>
@@ -199,40 +181,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 15,
     color: colors.white,
-  },
-  checked: {
-    backgroundColor: '#ffffff50',
-    borderRadius: 12,
-    width: 23,
-    height: 23,
-    position: 'absolute',
-    right: 24,
-    top: 42,
-  },
-  noteContainer: {
-    display: 'block',
-    backgroundColor: '#ffffff30',
-    width: '100%',
-    height: 100,
-    borderRadius: 10,
-    padding: 16,
-    justifyContent: 'space-evenly',
-    marginBottom: 10,
-  },
-  noteTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.white
-  },
-  noteDescription: {
-    fontSize: 15,
-    fontWeight: '400',
-    color: '#ffffff99'
-  },
-  noteDate: {
-    fontSize: 13,
-    fontWeight: '200',
-    color: '#ffffff99'
   },
   plusButton: {
     position: 'absolute',
