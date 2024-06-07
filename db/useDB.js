@@ -35,11 +35,48 @@ const useDB = () => {
     )
   }
 
-  const deleteByIds = (ids) => {
+  const deleteNotesByIds = (ids) => {
     ids.forEach(id => {
       db.execSync(`DELETE FROM notes WHERE id = ${id}`)
     });
   }
+
+  const createTodoTable = () => {
+    return db.execAsync(
+      `CREATE TABLE IF NOT EXISTS todos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        todo TEXT NOT NULL,
+        is_done BOOLEAN NOT NULL DEFAULT 0,
+        modification_date TEXT NOT NULL
+      );`
+    );
+  }
+
+  const fetchTodos = () => {
+    return db.getAllAsync('select * from todos');
+  }
+
+  const storeTodo = (data) => {
+    return db.execAsync(
+      `INSERT INTO todos (todo, is_done,modification_date) VALUES ('${data.todo}',${data.is_done},'${data.modification_date}')
+      `
+    );
+  }
+
+  const updateDoneStatus = (isDone, id) => {
+    return db.execAsync(
+      `UPDATE todos SET is_done = ${isDone} where id = ${id}`
+    )
+  }
+
+  const deleteTodoByIds = (ids) => {
+    ids.forEach(id => {
+      db.execSync(`DELETE FROM todos WHERE id = ${id}`)
+    });
+  };
+
+
+
 
   return {
     createNoteTable,
@@ -47,7 +84,13 @@ const useDB = () => {
     storeNote,
     fetchNotes,
     updateNote,
-    deleteByIds,
+    deleteNotesByIds,
+
+    createTodoTable,
+    fetchTodos,
+    storeTodo,
+    updateDoneStatus,
+    deleteTodoByIds,
   }
 }
 

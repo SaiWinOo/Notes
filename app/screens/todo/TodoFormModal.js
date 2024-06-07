@@ -2,14 +2,24 @@ import React from 'react'
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import colors from "../../config/colors";
 import { Controller, useForm } from "react-hook-form";
+import useDB from "../../../db/useDB";
 
 const TodoFormModal = () => {
 
+  const { storeTodo } = useDB();
   const { control, handleSubmit } = useForm({});
 
-  const onSave = (data) => {
-    console.log(data);
+  const onSave = async (data) => {
+    data.modification_date = new Date().toISOString();
+    data.is_done = false;
+    try {
+      let res = await storeTodo(data);
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
   }
+
 
   return (
     <View style={{ backgroundColor: '#161B22', flex: 1, padding: 20 }}>
