@@ -27,6 +27,8 @@ const AppNavigator = ({ routeName }) => {
 
     >
 
+      <Tab.Screen name='Todo' component={TodoStack} />
+
       <Tab.Screen name="Notes"
         options={{
           tabBarStyle: {
@@ -35,7 +37,6 @@ const AppNavigator = ({ routeName }) => {
           tabBarIcon: ({ focused, color, size }) => <MaterialIcons name="sticky-note-2" size={size} color={color} />
         }} component={NoteStack} />
 
-      <Tab.Screen name='Todo' component={TodoScreen} />
     </Tab.Navigator>
   )
 }

@@ -9,6 +9,7 @@ import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import constants from 'expo-constants';
 import NoteCard from "../../components/NoteCard";
+import { plusButtonStyle } from "../../styles/styles";
 
 
 const NoteHomeScreen = ({ navigation }) => {
@@ -114,6 +115,9 @@ const NoteHomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.navigate('NoteFormScreen')} style={plusButtonStyle}>
+        <AntDesign name="plus" size={28} color="white" />
+      </TouchableOpacity>
       <>
         <View style={{ opacity: isSelecting ? 1 : 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10, }}>
           <TouchableOpacity style={{ padding: 5 }} onPress={handleCancelSelect}>
@@ -135,10 +139,6 @@ const NoteHomeScreen = ({ navigation }) => {
           </View>
         </View>
       </>
-
-      <TouchableOpacity onPress={() => navigation.navigate('NoteFormScreen')} style={styles.plusButton}>
-        <AntDesign name="plus" size={28} color="white" />
-      </TouchableOpacity>
       <ScreenWrapper>
         <ScrollView showsVerticalScrollIndicator={false}>
           {
@@ -182,18 +182,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: colors.white,
   },
-  plusButton: {
-    position: 'absolute',
-    bottom: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    right: 50,
-    backgroundColor: colors.primary,
-    borderRadius: 25,
-    height: 50,
-    width: 50,
-    zIndex: 1,
-  }
 });
 
 export default NoteHomeScreen;

@@ -5,9 +5,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import AppNavigator from "./app/navigation/AppNavigator";
 import { useState } from "react";
 import dayjs from "dayjs";
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
 
 import * as SQLite from 'expo-sqlite';
 import AppProvider from "./app/provider/AppProvider";
